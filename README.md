@@ -1,4 +1,4 @@
-# gRPC in ASP.NET Core - NDC Manchester 2021
+# gRPC in ASP.NET Core - ITkonekt May 2021
 
 This repo contains the starter solution for the workshop.
 
