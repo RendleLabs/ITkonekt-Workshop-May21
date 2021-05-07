@@ -2,6 +2,6 @@
 {
     internal static class Constants
     {
-        public const string ConnectionString = "ndcmanchester2021.redis.cache.windows.net:6380,password=1iyQXaE6JKAjhT4ZkykInAz+APWVJXSbwChkOCtb31I=,ssl=True,abortConnect=False";
+        public const string ConnectionString = "itkonektworkshop.redis.cache.windows.net:6380,password=0qFnBbYJK3fMON3G6d06z5fcMZ8lrI9ovHkhmZd0K48=,ssl=True,abortConnect=False";
     }
 }

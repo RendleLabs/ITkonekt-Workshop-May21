@@ -10,7 +10,7 @@ namespace Pizza.Data
             PartitionKey = "toppings";
         }
         
-        public ToppingEntity(string id, string name, decimal price, int stockCount) : this()
+        public ToppingEntity(string id, string name, double price, int stockCount) : this()
         {
             Id = id;
             Name = name;
@@ -25,7 +25,7 @@ namespace Pizza.Data
             set => RowKey = value;
         }
         public string Name { get; set; }
-        public decimal Price { get; set; }
+        public double Price { get; set; }
         public int StockCount { get; set; }
     }
 }

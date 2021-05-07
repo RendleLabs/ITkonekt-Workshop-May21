@@ -36,7 +36,7 @@ namespace Pizza.Data
             }
         }
 
-        public async Task AddAsync(string id, string name, decimal price, int stockCount)
+        public async Task AddAsync(string id, string name, double price, int stockCount)
         {
             try
             {
