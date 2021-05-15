@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+//import "decimal.proto";
+
 option csharp_namespace = "Ingredients.Protos";
 
 package ingredients;
@@ -33,3 +35,7 @@ message GetCrustsRequest { }
 message GetCrustsResponse {
   repeated Crust crusts = 1;
 }
+
+//message DecimalExample {
+//  customTypes.DecimalValue price = 1;
+//}
