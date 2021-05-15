@@ -13,11 +13,13 @@ namespace Ingredients
     public class IngredientsImpl : IngredientsService.IngredientsServiceBase
     {
         private readonly IToppingData _toppingData;
+        private readonly ICrustData _crustData;
         private readonly ILogger<IngredientsImpl> _logger;
 
-        public IngredientsImpl(IToppingData toppingData, ILogger<IngredientsImpl> logger)
+        public IngredientsImpl(IToppingData toppingData, ICrustData crustData, ILogger<IngredientsImpl> logger)
         {
             _toppingData = toppingData;
+            _crustData = crustData;
             _logger = logger;
         }
 
@@ -35,6 +37,38 @@ namespace Ingredients
                             Id = t.Id,
                             Name = t.Name,
                             Price = t.Price
+                        })
+                    }
+                };
+                return response;
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogWarning("Operation was cancelled.");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        public override async Task<GetCrustsResponse> GetCrusts(GetCrustsRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var crusts = await _crustData.GetAsync(context.CancellationToken);
+                var response = new GetCrustsResponse
+                {
+                    Crusts =
+                    {
+                        crusts.Select(c => new Crust
+                        {
+                            Id = c.Id,
+                            Name = c.Name,
+                            Size = c.Size,
+                            Price = c.Price
                         })
                     }
                 };

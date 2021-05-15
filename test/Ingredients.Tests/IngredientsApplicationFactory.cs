@@ -36,6 +36,20 @@ namespace Ingredients.Tests
                     .Returns(toppingEntities);
 
                 services.AddSingleton(toppingSub);
+
+                services.RemoveAll<ICrustData>();
+
+                var crustEntities = new List<CrustEntity>
+                {
+                    new CrustEntity("thin9", "Thin", 9, 5d, 10),
+                    new CrustEntity("deep9", "Deep", 9, 6d, 10),
+                };
+
+                var crustSub = Substitute.For<ICrustData>();
+                crustSub.GetAsync(Arg.Any<CancellationToken>())
+                    .Returns(crustEntities);
+
+                services.AddSingleton(crustSub);
             });
             base.ConfigureWebHost(builder);
         }

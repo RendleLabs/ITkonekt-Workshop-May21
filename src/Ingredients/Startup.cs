@@ -19,6 +19,7 @@ namespace Ingredients
         {
             services.AddGrpc();
             services.AddSingleton<IToppingData, ToppingData>();
+            services.AddSingleton<ICrustData, CrustData>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
