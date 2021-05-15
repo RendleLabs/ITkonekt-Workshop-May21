@@ -47,9 +47,28 @@ namespace Orders.Services
             };
         }
 
-        public override Task Subscribe(SubscribeRequest request, IServerStreamWriter<SubscribeResponse> responseStream, ServerCallContext context)
+        public override async Task Subscribe(SubscribeRequest request, IServerStreamWriter<SubscribeResponse> responseStream, ServerCallContext context)
         {
-            return base.Subscribe(request, responseStream, context);
+            var token = context.CancellationToken;
+
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    var message = await _orderMessages.ReadAsync(token);
+                    var response = new SubscribeResponse
+                    {
+                        CrustId = message.CrustId,
+                        ToppingIds = {message.ToppingIds},
+                        Time = message.Time.ToTimestamp()
+                    };
+                    await responseStream.WriteAsync(response);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+            }
         }
     }
 }
