@@ -6,26 +6,30 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Frontend.Models;
+using Ingredients.Protos;
 
 namespace Frontend.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IngredientsService.IngredientsServiceClient _ingredients;
         private readonly ILogger<HomeController> _log;
 
-        public HomeController(ILogger<HomeController> log)
+        public HomeController(IngredientsService.IngredientsServiceClient ingredients, ILogger<HomeController> log)
         {
+            _ingredients = ingredients;
             _log = log;
         }
 
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var toppings = new List<ToppingViewModel>
-            {
-                new("cheese", "Cheese", 1m),
-                new("tomatosauce", "Tomato Sauce", 0.5m),
-            };
+            var response = await _ingredients.GetToppingsAsync(new GetToppingsRequest());
+
+            var toppings = response.Toppings
+                .Select(t => new ToppingViewModel(t.Id, t.Name, Convert.ToDecimal(t.Price)))
+                .ToList();
+            
             var crusts = new List<CrustViewModel>
             {
                 new("thin9", "Thin", 9, 5m),

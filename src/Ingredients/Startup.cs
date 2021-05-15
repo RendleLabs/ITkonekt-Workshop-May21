@@ -33,7 +33,7 @@ namespace Ingredients
 
             app.UseEndpoints(endpoints =>
             {
-                // endpoints.MapGrpcService<GreeterService>();
+                endpoints.MapGrpcService<IngredientsImpl>();
 
                 endpoints.MapGet("/", async context =>
                 {
