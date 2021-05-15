@@ -54,6 +54,16 @@ namespace Ingredients
             }
         }
 
+        public override async Task<DecrementToppingsResponse> DecrementToppings(DecrementToppingsRequest request, ServerCallContext context)
+        {
+            foreach (var toppingId in request.ToppingIds)
+            {
+                await _toppingData.DecrementStockAsync(toppingId, context.CancellationToken);
+            }
+
+            return new DecrementToppingsResponse();
+        }
+
         public override async Task<GetCrustsResponse> GetCrusts(GetCrustsRequest request, ServerCallContext context)
         {
             try
@@ -84,6 +94,12 @@ namespace Ingredients
                 _logger.LogError(ex, $"Error: {ex.Message}");
                 throw;
             }
+        }
+
+        public override async Task<DecrementCrustsResponse> DecrementCrusts(DecrementCrustsRequest request, ServerCallContext context)
+        {
+            await _crustData.DecrementStockAsync(request.CrustId);
+            return new DecrementCrustsResponse();
         }
     }
 }
