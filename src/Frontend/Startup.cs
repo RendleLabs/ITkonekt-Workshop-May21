@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Frontend.Controllers;
 using Ingredients.Protos;
+using JaegerTracing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -26,6 +28,8 @@ namespace Frontend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddJaegerTracing(Configuration, nameof(HomeController));
+            
             services.AddControllersWithViews();
 
             services.AddGrpcClient<IngredientsService.IngredientsServiceClient>((provider, options) =>

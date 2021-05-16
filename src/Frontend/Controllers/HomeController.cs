@@ -12,6 +12,8 @@ namespace Frontend.Controllers
 {
     public class HomeController : Controller
     {
+        private static readonly ActivitySource Activities = new(nameof(HomeController));
+        
         private readonly IngredientsService.IngredientsServiceClient _ingredients;
         private readonly ILogger<HomeController> _log;
 
@@ -24,18 +26,25 @@ namespace Frontend.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var toppingsResponse = await _ingredients.GetToppingsAsync(new GetToppingsRequest());
-
-            var toppings = toppingsResponse.Toppings
-                .Select(t => new ToppingViewModel(t.Id, t.Name, Convert.ToDecimal(t.Price)))
-                .ToList();
-
-            var crustsResponse = await _ingredients.GetCrustsAsync(new GetCrustsRequest());
-
-            var crusts = crustsResponse.Crusts
-                .Select(c => new CrustViewModel(c.Id, c.Name, c.Size, Convert.ToDecimal(c.Price)))
-                .ToList();
+            List<ToppingViewModel> toppings;
+            List<CrustViewModel> crusts;
             
+            using (var activity = Activities.StartActivity("GetIngredients"))
+            {
+                activity?.AddTag("User", User.Identity.Name ?? "Anonymous");
+                var toppingsResponse = await _ingredients.GetToppingsAsync(new GetToppingsRequest());
+
+                toppings = toppingsResponse.Toppings
+                    .Select(t => new ToppingViewModel(t.Id, t.Name, Convert.ToDecimal(t.Price)))
+                    .ToList();
+
+                var crustsResponse = await _ingredients.GetCrustsAsync(new GetCrustsRequest());
+
+                crusts = crustsResponse.Crusts
+                    .Select(c => new CrustViewModel(c.Id, c.Name, c.Size, Convert.ToDecimal(c.Price)))
+                    .ToList();
+            }
+
             var viewModel = new HomeViewModel(toppings, crusts);
             return View(viewModel);
         }

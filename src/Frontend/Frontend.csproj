@@ -10,6 +10,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Tye.Extensions.Configuration" Version="0.6.0-alpha.21070.5" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="5.0.1" />
   </ItemGroup>
   
   <ItemGroup>
@@ -19,5 +20,9 @@
     <Protobuf Include="../Orders/Protos/orders.proto" GrpcServices="Client">
       <Link>Protos/orders.proto</Link>
     </Protobuf>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\JaegerTracing\JaegerTracing.csproj" />
   </ItemGroup>
 </Project>

@@ -23,6 +23,13 @@ spec:
             cpu: "100m"
         ports:
         - containerPort: 80
+        env:
+        - name: Jaeger__ServiceName
+          value: "ingredients"
+        - name: Jaeger__Host
+          value: "jaeger-agent"
+        - name: Jaeger__Port
+          value: "6831"
 
 ---
 
