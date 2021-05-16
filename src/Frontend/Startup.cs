@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
+using AuthHelp;
 using Frontend.Auth;
 using Grpc.Core;
 using Ingredients.Protos;
@@ -30,12 +32,21 @@ namespace Frontend
         {
             services.AddControllersWithViews();
 
+            services.AddHttpClient("ingredients")
+                .ConfigurePrimaryHttpMessageHandler(DevelopmentModeCertificateHelper.CreateClientHandler);
+
             services.AddGrpcClient<IngredientsService.IngredientsServiceClient>((provider, options) =>
             {
                 var config = provider.GetRequiredService<IConfiguration>();
                 var uri = config.GetServiceUri("Ingredients", "https");
                 options.Address = uri ?? new Uri("https://localhost:5003");
-            });
+            })
+                .ConfigureChannel((provider, channel) =>
+                {
+                    channel.HttpHandler = null;
+                    channel.HttpClient = provider.GetRequiredService<IHttpClientFactory>().CreateClient("ingredients");
+                    channel.DisposeHttpClient = true;
+                });
 
             services.AddGrpcClient<OrderService.OrderServiceClient>(((provider, options) =>
                 {

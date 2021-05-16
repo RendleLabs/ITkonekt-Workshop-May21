@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Ingredients.Protos;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using Orders.Protos;
 using Orders.PubSub;
 
@@ -14,19 +16,27 @@ namespace Orders.Services
         private readonly IngredientsService.IngredientsServiceClient _ingredients;
         private readonly IOrderPublisher _orderPublisher;
         private readonly IOrderMessages _orderMessages;
+        private readonly ILogger<OrdersImpl> _logger;
 
         public OrdersImpl(IngredientsService.IngredientsServiceClient ingredients,
             IOrderPublisher orderPublisher,
-            IOrderMessages orderMessages)
+            IOrderMessages orderMessages,
+            ILogger<OrdersImpl> logger)
         {
             _ingredients = ingredients;
             _orderPublisher = orderPublisher;
             _orderMessages = orderMessages;
+            _logger = logger;
         }
 
         [Authorize]
         public override async Task<PlaceOrderResponse> PlaceOrder(PlaceOrderRequest request, ServerCallContext context)
         {
+            var httpContext = context.GetHttpContext();
+            var user = httpContext.User;
+            var name = user.FindFirst(ClaimTypes.Name)?.Value;
+            _logger.LogInformation($"Order placed by {name}");
+            
             var time = DateTimeOffset.UtcNow.AddHours(0.5d);
 
             await _orderPublisher.PublishOrder(request.CrustId, request.ToppingIds, time);
