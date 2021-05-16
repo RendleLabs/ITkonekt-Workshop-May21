@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: orders
   namespace: pizza
 spec:
   selector:
     matchLabels:
-      run: frontend
+      app: orders
   replicas: 1
   template:
     metadata:
       labels:
-        run: frontend
+        app: orders
     spec:
       containers:
-      - name: frontend
-        image: local/frontend:latest
+      - name: orders
+        image: local/orders:latest
         imagePullPolicy: Never
         resources:
           limits:
-            cpu: 200m
-            memory: 100Mi
+            memory: "128Mi"
+            cpu: "100m"
         ports:
         - containerPort: 80
         env:
@@ -32,25 +32,16 @@ spec:
           value: "80"
         - name: Service__Ingredients__Protocol
           value: "http"
-        - name: Service__Orders__Host
-          value: "orders"
-        - name: Service__Orders__Port
-          value: "80"
-        - name: Service__Orders__Protocol
-          value: "http"
-
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend
+  name: orders
   namespace: pizza
 spec:
-  type: NodePort
   ports:
   - port: 80
-    nodePort: 30001
   selector:
-    run: frontend
+    app: orders
