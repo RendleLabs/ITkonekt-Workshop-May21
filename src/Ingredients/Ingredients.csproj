@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
+    <PackageReference Include="Grpc.HealthCheck" Version="2.37.1" />
   </ItemGroup>
 
   <ItemGroup>

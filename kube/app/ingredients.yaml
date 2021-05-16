@@ -23,6 +23,14 @@ spec:
             cpu: "100m"
         ports:
         - containerPort: 80
+        readinessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:80", "-service", "IngredientsService", "-rpc-timeout", "5000ms"]
+          initialDelaySeconds: 10
+        livenessProbe:
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:80", "-service", "IngredientsService", "-rpc-timeout", "5000ms"]
+          initialDelaySeconds: 10
         env:
         - name: Jaeger__ServiceName
           value: "ingredients"
