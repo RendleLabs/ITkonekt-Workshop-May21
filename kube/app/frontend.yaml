@@ -14,15 +14,25 @@ spec:
         run: frontend
     spec:
       containers:
-        - name: frontend
-          image: local/frontend:latest
-          imagePullPolicy: Never
-          resources:
-            limits:
-              cpu: 200m
-              memory: 100Mi
-          ports:
-            - containerPort: 80
+      - name: frontend
+        image: local/frontend:latest
+        imagePullPolicy: Never
+        resources:
+          limits:
+            cpu: 200m
+            memory: 100Mi
+        ports:
+        - containerPort: 80
+        env:
+        - name: DOTNET_SYSTEM_NET_HTTP_SOCKETSHTTPHANDLER_HTTP2UNENCRYPTEDSUPPORT
+          value: "true"
+        - name: Service__Ingredients__Host
+          value: "ingredients"
+        - name: Service__Ingredients__Port
+          value: "80"
+        - name: Service__Ingredients__Protocol
+          value: "http"
+
 
 ---
 

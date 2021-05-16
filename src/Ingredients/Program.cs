@@ -22,13 +22,13 @@ namespace Ingredients
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    if (OperatingSystem.IsMacOS())
-                    {
-                        webBuilder.ConfigureKestrel(options =>
-                        {
-                            options.ListenLocalhost(5003, o => o.Protocols = HttpProtocols.Http2);
-                        });
-                    }
+                    // if (OperatingSystem.IsMacOS())
+                    // {
+                    //     webBuilder.ConfigureKestrel(options =>
+                    //     {
+                    //         options.ListenLocalhost(5003, o => o.Protocols = HttpProtocols.Http2);
+                    //     });
+                    // }
                     
                     webBuilder.UseStartup<Startup>();
                 });
