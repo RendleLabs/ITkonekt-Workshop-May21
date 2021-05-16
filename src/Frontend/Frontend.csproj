@@ -20,4 +20,8 @@
       <Link>Protos/orders.proto</Link>
     </Protobuf>
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\AuthHelp\AuthHelp.csproj" />
+  </ItemGroup>
 </Project>

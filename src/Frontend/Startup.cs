@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Frontend.Auth;
+using Grpc.Core;
 using Ingredients.Protos;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,11 +38,30 @@ namespace Frontend
             });
 
             services.AddGrpcClient<OrderService.OrderServiceClient>(((provider, options) =>
-            {
-                var config = provider.GetRequiredService<IConfiguration>();
-                var uri = config.GetServiceUri("Orders", "https");
-                options.Address = uri ?? new Uri("https://localhost:5005");
-            }));
+                {
+                    var config = provider.GetRequiredService<IConfiguration>();
+                    var uri = config.GetServiceUri("Orders");
+                    options.Address = uri ?? new Uri("https://localhost:5005");
+                }))
+                .ConfigureChannel(((provider, channel) =>
+                {
+                    var authHelper = provider.GetRequiredService<AuthHelper>();
+                    var credentials = CallCredentials.FromInterceptor(async (context, metadata) =>
+                    {
+                        var token = await authHelper.GetTokenAsync();
+                        metadata.Add("Authorization", $"Bearer {token}");
+                    });
+                    channel.Credentials = ChannelCredentials.Create(new SslCredentials(), credentials);
+                }));
+
+            services.AddHttpClient<AuthHelper>()
+                .ConfigureHttpClient(((provider, client) =>
+                {
+                    var config = provider.GetRequiredService<IConfiguration>();
+                    var uri = config.GetServiceUri("Orders");
+                    client.BaseAddress = uri;
+                    client.DefaultRequestVersion = new Version(2, 0);
+                }));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,15 +77,13 @@ namespace Frontend
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }
